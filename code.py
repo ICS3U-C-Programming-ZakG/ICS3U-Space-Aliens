@@ -8,7 +8,7 @@ import stage
 
 def game_scene():
 
-    # this is main game game_scene
+    # this is the main game game_scene
     print("\n\n\n")
     print("Hello, Zak")
 
