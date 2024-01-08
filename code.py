@@ -3,8 +3,8 @@
 # Created on: Dec. 31, 2023
 # This program is the Space Aliens program on the PyBadge.
 
-import ugame
 import stage
+import ugame
 
 def game_scene():
 
