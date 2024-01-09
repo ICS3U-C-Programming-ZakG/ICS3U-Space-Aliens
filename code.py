@@ -9,8 +9,21 @@ import ugame
 def game_scene():
 
     # this is the main game game_scene
-    print("\n\n\n")
-    print("Hello, Zak")
+
+    # import background and assign to a variable
+    image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
+
+    # grid for image background
+    background = stage.Grid(image_bank_background, 10, 8)
+
+    # display images and set refresh rate to 60 hertz
+    game = stage.Stage(ugame.display, 60)
+
+    # put image of background into a list assigned to game
+    game.layers = [background]
+
+    # display background
+    game.render_block()
 
     # game loop
     while True:
