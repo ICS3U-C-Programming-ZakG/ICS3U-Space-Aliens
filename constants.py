@@ -19,3 +19,11 @@ FPS = 60
 
 # Movement speed/how much it moves
 SPRITE_MOVEMENT_SPEED = 1
+
+# create a dictionary of all possible button states
+BUTTON_STATE = {
+    "button_up" : "up",
+    "button_just_pressed" : "just pressed",
+    "button_still_pressed" : "still pressed",
+    "button_released" : "released"
+}
