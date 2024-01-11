@@ -27,3 +27,7 @@ BUTTON_STATE = {
     "button_still_pressed" : "still pressed",
     "button_released" : "released"
 }
+
+# new palette for red filled text
+RED_PALETTE = (b'\xff\xff\x00\x22\xcey\x22\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+               b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff')

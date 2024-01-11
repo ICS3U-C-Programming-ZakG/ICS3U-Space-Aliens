@@ -8,6 +8,62 @@ import ugame
 
 import constants
 
+# this is the menu scene
+def menu_scene():
+
+    # import background and assign to a variable
+    image_bank_background = stage.Bank.from_bmp16("space_aliens.bmp")
+
+    # create text list
+    text = []
+
+    # create first text and customize
+    text1 = stage.Text(width = 29, height = 12, font = None, palette = constants.RED_PALETTE, buffer = None)
+
+    # move text
+    text1.move(38, 10)
+
+    # assign a text to variable
+    text1.text("Space Aliens")
+
+    # add text to text list
+    text.append(text1)
+
+    # create first text and customize
+    text2 = stage.Text(width = 29, height = 12, font = None, palette = constants.RED_PALETTE, buffer = None)
+
+    # move text
+    text2.move(40, 110)
+
+    # assign a text to variable
+    text2.text("PRESS START")
+
+    # add text to text list
+    text.append(text2)
+
+    # grid for image background
+    background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
+
+    # display images and set refresh rate to 60 hertz
+    game = stage.Stage(ugame.display, constants.FPS)
+
+    # put image of background and text into a list assigned to game
+    game.layers = text + [background]
+
+    # display background
+    game.render_block()
+
+    # game loop
+    while True:
+
+        # get user button input
+        keys = ugame.buttons.get_pressed()
+
+        if keys & ugame.K_START:
+            game_scene()
+
+        game.tick()
+
 # this is the main game game_scene
 def game_scene():
 
@@ -157,4 +213,4 @@ def game_scene():
         game.tick()
 
 if __name__ == "__main__":
-    game_scene()
+    menu_scene()
