@@ -5,14 +5,83 @@
 
 import stage
 import ugame
+import time
+import random
 
 import constants
 
-# this is the menu scene
+# this is the splash scene for the menu
+def splash_scene():
+
+    # create coin sound
+    coin_sound = open("coin.wav", 'rb')
+    sound = ugame.audio
+
+    # stop all audio
+    sound.stop()
+
+    # make sure mute is false
+    sound.mute(False)
+
+    # play coin sound
+    sound.play(coin_sound)
+
+    # import background and assign to a variable
+    image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
+
+    # grid for image background
+    background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
+
+     # used this program to split the image into tile: 
+    #   https://ezgif.com/sprite-cutter/ezgif-5-818cdbcc3f66.png
+    background.tile(2, 2, 0)  # blank white
+    background.tile(3, 2, 1)
+    background.tile(4, 2, 2)
+    background.tile(5, 2, 3)
+    background.tile(6, 2, 4)
+    background.tile(7, 2, 0)  # blank white
+    background.tile(2, 3, 0)  # blank white
+    background.tile(3, 3, 5)
+    background.tile(4, 3, 6)
+    background.tile(5, 3, 7)
+    background.tile(6, 3, 8)
+    background.tile(7, 3, 0)  # blank white
+    background.tile(2, 4, 0)  # blank white
+    background.tile(3, 4, 9)
+    background.tile(4, 4, 10)
+    background.tile(5, 4, 11)
+    background.tile(6, 4, 12)
+    background.tile(7, 4, 0)  # blank white
+    background.tile(2, 5, 0)  # blank white
+    background.tile(3, 5, 0)
+    background.tile(4, 5, 13)
+    background.tile(5, 5, 14)
+    background.tile(6, 5, 0)
+    background.tile(7, 5, 0)  # blank white
+
+    # display images and set refresh rate to 60 hertz
+    game = stage.Stage(ugame.display, constants.FPS)
+
+    # put image of background into a list assigned to game
+    game.layers =  [background]
+
+    # display background
+    game.render_block()
+
+    # game loop
+    while True:
+
+        # wait 2 seconds
+        time.sleep(2.0)
+
+        # call menu scene function
+        menu_scene()
+
+# this is the menu scene function
 def menu_scene():
 
     # import background and assign to a variable
-    image_bank_background = stage.Bank.from_bmp16("space_aliens.bmp")
+    image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
 
     # create text list
     text = []
@@ -91,6 +160,18 @@ def game_scene():
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
+
+    # for loop for x location
+    for x_location in range(constants.SCREEN_GRID_X):
+
+        # for loop for y location
+        for y_location in range(constants.SCREEN_GRID_Y):
+
+            # pick random tile 1-3
+            tile_picked = random.randint(1,3)
+
+            # place random tile in the location of x and y
+            background.tile(x_location, y_location, tile_picked)
 
     # create a single sprite,  get fifth image, and place in middle of the screen
     ship = stage.Sprite(image_bank_sprites, 5, 75, constants.SCREEN_Y - constants.SPRITE_SIZE)
@@ -213,4 +294,4 @@ def game_scene():
         game.tick()
 
 if __name__ == "__main__":
-    menu_scene()
+    splash_scene()
