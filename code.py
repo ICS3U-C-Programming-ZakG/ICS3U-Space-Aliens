@@ -136,6 +136,23 @@ def menu_scene():
 # this is the main game game_scene
 def game_scene():
 
+    # function to show alien
+    def show_alien():
+
+        # loop while alien number in range of amount of aliens
+        for alien_number in range(len(aliens)):
+
+            # check if alien position is less than zero aka in storing area
+            if aliens[alien_number].x < 0:
+
+                # move alien to random part at top of screen
+                aliens[alien_number].move(random.randint(0 + constants.SPRITE_SIZE,
+                                                         constants.SCREEN_X - constants.SPRITE_SIZE),
+                                                         constants.OFF_TOP_SCREEN)
+
+                # break out of loop
+                break
+
     # import background and assign to a variable
     image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
 
@@ -176,8 +193,23 @@ def game_scene():
     # create a single sprite,  get fifth image, and place in middle of the screen
     ship = stage.Sprite(image_bank_sprites, 5, 75, constants.SCREEN_Y - constants.SPRITE_SIZE)
 
-    # create alien and assign location and image to it
-    alien = stage.Sprite(image_bank_sprites, 9, int(constants.SCREEN_X/2 - constants.SPRITE_SIZE/2), 16)
+    # create list for aliens
+    aliens = []
+
+    # loop while in range of total number of aliens
+    for alien_number in range(constants.TOTAL_NUMBER_OF_ALIENS):
+
+        # assign image to alien and move to off screen storing location
+        a_single_alien = stage.Sprite(image_bank_sprites, 9,
+                                      constants.OFF_SCREEN_X,
+                                      constants.OFF_SCREEN_Y)
+        
+        # append aliens to list
+        aliens.append(a_single_alien)
+    
+    # call function to show alien
+    show_alien()
+
 
     # create list for laser
     lasers = []
@@ -197,7 +229,7 @@ def game_scene():
     game = stage.Stage(ugame.display, constants.FPS)
 
     # put images into a list assigned to game
-    game.layers = lasers + [ship] + [alien] + [background]
+    game.layers = aliens + lasers + [ship] + [background]
 
     # display background
     game.render_block()
@@ -334,8 +366,29 @@ def game_scene():
                     # move laser to off screen storing location
                     lasers[laser_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
 
+        # for loop while alien number in range of amount of aliens
+        for alien_number in range(len(aliens)):
+
+            # check if alien x position is larger than 0
+            if aliens[alien_number].x > 0:
+
+                # move alien down
+                aliens[alien_number].move(aliens[alien_number].x,
+                                          aliens[alien_number].y +
+                                          constants.ALIEN_SPEED)
+
+                # check if alien is off screen
+                if aliens[alien_number]. y > constants.SCREEN_Y:
+
+                    # move alien to off screen storing location
+                    aliens[alien_number].move(constants.OFF_SCREEN_X,
+                                              constants.OFF_SCREEN_Y)
+
+                    # call function to show alien
+                    show_alien()
+
         # redraw sprites
-        game.render_sprites(lasers + [ship] + [alien])
+        game.render_sprites(aliens + lasers + [ship])
         game.tick()
 
 if __name__ == "__main__":
