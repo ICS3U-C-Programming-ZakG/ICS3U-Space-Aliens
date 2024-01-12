@@ -14,6 +14,33 @@ SCREEN_GRID_Y = 8
 # size of sprite
 SPRITE_SIZE = 16
 
+# total number of aliens
+TOTAL_NUMBER_OF_ALIENS = 5
+
+# declare total number of lasers
+TOTAL_NUMBER_OF_LASERS = 5
+
+# declare ship speed
+SHIP_SPEED = 1
+
+# declare alien speed
+ALIEN_SPEED = 1
+
+# declare laser speed
+LASER_SPEED = 2
+
+# declare off screen x value
+OFF_SCREEN_X = -100
+
+# declare off screen y value
+OFF_SCREEN_Y = -100
+
+# declare off top of screen
+OFF_TOP_SCREEN = -1 * SPRITE_SIZE
+
+# declare off bottom of screen
+OFF_BOTTOM_SCREEN = SCREEN_Y + SPRITE_SIZE
+
 # 60 FPS
 FPS = 60
 
