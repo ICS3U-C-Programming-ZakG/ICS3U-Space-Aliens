@@ -136,6 +136,9 @@ def menu_scene():
 # this is the main game game_scene
 def game_scene():
 
+    # initialize score
+    score = 0
+
     # function to show alien
     def show_alien():
 
@@ -174,6 +177,17 @@ def game_scene():
 
     # make sure audio isn't muted
     sound.mute(False)
+
+    # getting sound from library and assigning to variable
+    boom_sound = open("boom.wav", 'rb')
+    sound = ugame.audio
+
+    # stop all sound
+    sound.stop()
+
+    # make sure audio isn't muted
+    sound.mute(False)
+
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
@@ -387,6 +401,40 @@ def game_scene():
                     # call function to show alien
                     show_alien()
 
+            # loop through lasers
+            for laser_number in range(len(lasers)):
+
+                # check if laser is on screen
+                if lasers[laser_number].x > 0:
+
+                    # loop through aliens
+                    for alien_number in range(len(aliens)):
+
+                        # check if alien is on screen
+                        if aliens[alien_number].x > 0:
+
+                            # set bounding box and size them down to fit image sizes
+                            if stage.collide(lasers[laser_number].x + 6, lasers[laser_number].y + 2,
+                                             lasers[laser_number].x + 11, lasers[laser_number].y + 12,
+                                             aliens[alien_number].x + 1, aliens[alien_number].y,
+                                             aliens[alien_number].x + 15, aliens[alien_number].y + 15):
+                                
+                                # you hit an alien, move them off screen to staging
+                                aliens[alien_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                                lasers[laser_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+
+                                # stop all sound
+                                sound.stop()
+
+                                # play boom sound
+                                sound.play(boom_sound)
+
+                                # call function to show aliens
+                                show_alien()
+                                show_alien()
+
+                                # add one to score
+                                score = score + 1
         # redraw sprites
         game.render_sprites(aliens + lasers + [ship])
         game.tick()
