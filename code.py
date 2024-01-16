@@ -7,6 +7,7 @@ import stage
 import ugame
 import time
 import random
+import supervisor
 
 import constants
 
@@ -139,6 +140,21 @@ def game_scene():
     # initialize score
     score = 0
 
+    # scale text size
+    score_text = stage.Text(width = 29, height = 14)
+
+    # clear score
+    score_text.clear()
+
+    # set cursor to top left
+    score_text.cursor(0,0)
+
+    # move slightly down and to the side
+    score_text.move(1,1)
+
+    # set score to whatever the value is
+    score_text.text("Score: {0}".format(score))
+
     # function to show alien
     def show_alien():
 
@@ -170,16 +186,8 @@ def game_scene():
 
     # getting sound from library and assigning to variable
     pew_sound = open("pew.wav", 'rb')
-    sound = ugame.audio
-
-    # stop all sound
-    sound.stop()
-
-    # make sure audio isn't muted
-    sound.mute(False)
-
-    # getting sound from library and assigning to variable
     boom_sound = open("boom.wav", 'rb')
+    crash_sound = open("crash.wav", 'rb')
     sound = ugame.audio
 
     # stop all sound
@@ -187,7 +195,6 @@ def game_scene():
 
     # make sure audio isn't muted
     sound.mute(False)
-
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
@@ -243,7 +250,7 @@ def game_scene():
     game = stage.Stage(ugame.display, constants.FPS)
 
     # put images into a list assigned to game
-    game.layers = aliens + lasers + [ship] + [background]
+    game.layers = [score_text] + aliens + lasers + [ship] + [background]
 
     # display background
     game.render_block()
@@ -401,6 +408,25 @@ def game_scene():
                     # call function to show alien
                     show_alien()
 
+                    # subtract one from score
+                    score -= 1
+
+                    # check if score falls under 0
+                    if score < 0:
+                        
+                        # keep score 0
+                        score = 0
+                    
+                    # clear score text
+                    score_text.clear()
+
+                    # reposition in top left of screen
+                    score_text.cursor(0,0)
+                    score_text.move(1,1)
+
+                    # display score
+                    score_text.text("Score: {0}".format(score))
+
             # loop through lasers
             for laser_number in range(len(lasers)):
 
@@ -435,8 +461,120 @@ def game_scene():
 
                                 # add one to score
                                 score = score + 1
+
+                                # clear text
+                                score_text.clear()
+
+                                # position score in top left
+                                score_text.cursor(0,0)
+                                score_text.move(1,1)
+
+                                # display text
+                                score_text.text("Score: {0}".format(score))
+
+            # check if alien hits ship
+            for alien_number in range(len(aliens)):
+
+                # check if alien is on screen
+                if aliens[alien_number].x > 0:
+
+                    # check if alien hits ship bounding box
+                    if stage.collide(aliens[alien_number].x + 1, aliens[alien_number].y,
+                                     aliens[alien_number].x + 15, aliens[alien_number].y + 15,
+                                     ship.x, ship.y,
+                                     ship.x + 15, ship.y + 15):
+                        
+                        # alien has hit ship, stop sound
+                        sound.stop()
+
+                        # play crash sound
+                        sound.play(crash_sound)
+
+                        # wait 3 seconds
+                        time.sleep(3.0)
+
+                        # pass score to game over scene function
+                        game_over_scene(score)
+
         # redraw sprites
         game.render_sprites(aliens + lasers + [ship])
+        game.tick()
+
+# game over scene function
+def game_over_scene(final_score):
+
+    # turn off sound
+    sound = ugame.audio
+    sound.stop()
+
+    # access image bank
+    image_bank_2 = stage.Bank.from_bmp16("mt_game_studio.bmp")
+
+    # set image to 0 in bank
+    background = stage.Grid(image_bank_2, constants.SCREEN_GRID_X,
+                            constants.SCREEN_GRID_Y)
+    
+    # add text list
+    text = []
+
+    # customize text
+    text1 = stage.Text(width=29, height=14, font=None, palette=constants.RED_PALETTE, buffer=None)
+
+    # move text
+    text1.move(22, 20)
+
+    # display final score
+    text1.text("Final Score: {:0>2d}".format(final_score))
+
+    # append to text list
+    text.append(text1)
+
+    # customize text 2
+    text2 = stage.Text(width=29, height=14, font=None, palette=constants.RED_PALETTE, buffer=None)
+
+    # move text 2
+    text2.move(43, 60)
+
+    # assign text to variable
+    text2.text("Game Over")
+
+    # append text to text list
+    text.append(text2)
+
+    # customize text 3
+    text3 = stage.Text(width=29, height=14, font=None, palette=constants.RED_PALETTE, buffer=None)
+
+    # move text 3
+    text3.move(32, 110)
+
+    # create text for text 3
+    text3.text("PRESS SELECT")
+
+    # append text to text list
+    text.append(text3)
+
+    # set frame rate to 60 fps
+    game = stage.Stage(ugame.display, constants.FPS)
+
+    # add text to game layer with background
+    game.layers = text + [background]
+
+    # display background and text
+    game.render_block()
+
+    # game loop
+    while True:
+
+        # get user input
+        keys = ugame.buttons.get_pressed()
+
+        # check if SELECT was pressed
+        if keys & ugame.K_SELECT != 0:
+
+            # reset PyBadge
+            supervisor.reload()
+
+        # game tick
         game.tick()
 
 if __name__ == "__main__":
