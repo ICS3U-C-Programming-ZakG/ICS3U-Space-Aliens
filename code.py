@@ -14,8 +14,8 @@ import constants
 # this is the splash scene for the menu
 def splash_scene():
 
-    # create bell sound
-    bell_sound = open("boxing_bell.wav", 'rb')
+    # create chime sound
+    chime_sound = open("chime.wav", 'rb')
     sound = ugame.audio
 
     # stop all audio
@@ -24,8 +24,8 @@ def splash_scene():
     # make sure mute is false
     sound.mute(False)
 
-    # play bell sound
-    sound.play(bell_sound)
+    # play chime sound
+    sound.play(chime_sound)
 
     # import background and assign to a variable
     image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
@@ -115,7 +115,7 @@ def menu_scene():
     text3 = stage.Text(width = 22, height = 12, font = None, palette = constants.RED_PALETTE, buffer = None)
 
     # move text
-    text3.move(26, 90)
+    text3.move(24, 90)
 
     # assign a text to variable
     text3.text("SELECT for Info")
@@ -176,6 +176,18 @@ def instructions_scene():
     # add text to text list
     text.append(text1)
 
+    # create first text and customize
+    text2 = stage.Text(width = 60, height = 40, font = None, palette = constants.RED_PALETTE, buffer = None)
+
+    # move text
+    text2.move(4, 110)
+
+    # assign a text to variable
+    text2.text("B to Return to Menu")
+
+    # add text to text list
+    text.append(text2)
+
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
 
@@ -221,6 +233,24 @@ def game_scene():
     # set score to whatever the value is
     score_text.text("Score: {0}".format(score))
 
+    # initialize lives
+    lives = 3
+
+    # scale text size
+    lives_text = stage.Text(width = 29, height = 14)
+
+    # clear score
+    lives_text.clear()
+
+    # set cursor to top left
+    lives_text.cursor(150, 0)
+
+    # move slightly down and to the side
+    lives_text.move(-1,1)
+
+    # set lives to whatever the value is
+    lives_text.text("Lives: {0}".format(lives))
+
     # function to show alien
     def show_alien():
 
@@ -251,10 +281,11 @@ def game_scene():
     select_button = constants.BUTTON_STATE["button_up"]
 
     # getting sound from library and assigning to variable
-    background_sound = open("saturated-acoustic-hip-hop-drumloop-155bpm-143349.wav", 'rb')
+    #background_sound = open(".wav", 'rb')
     cannon_sound = open("cannon_x.wav", 'rb')
     boom_sound = open("boom_x.wav", 'rb')
     hit_sound = open("baseball_hit.wav", 'rb')
+    win_sound = open("applause_y.wav", 'rb')
     sound = ugame.audio
 
     # stop all sound
@@ -262,12 +293,6 @@ def game_scene():
 
     # make sure audio isn't muted
     sound.mute(False)
-
-    # play background sound looped
-    while True:
-        sound.play(background_sound)
-
-        break
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
@@ -323,7 +348,7 @@ def game_scene():
     game = stage.Stage(ugame.display, constants.FPS)
 
     # put images into a list assigned to game
-    game.layers = [score_text] + aliens + lasers + [ship] + [background]
+    game.layers = [lives_text] + [score_text] + aliens + lasers + [ship] + [background]
 
     # display background
     game.render_block()
@@ -595,15 +620,108 @@ def game_scene():
                         # play hit sound
                         sound.play(hit_sound)
 
-                        # wait 3 seconds
-                        time.sleep(3.0)
+                        # subtract one from lives
+                        lives -= 1
 
-                        # pass score to game over scene function
-                        game_over_scene(score)
+                        # clear lives text
+                        lives_text.clear()
+
+                        # reposition in top left of screen
+                        lives_text.cursor(150, 0)
+                        lives_text.move(-1, 1)
+
+                        # display lives
+                        lives_text.text("Lives: {0}".format(lives))
+
+                        # check if lives falls under 0
+                        if lives == 0:
+                        
+                            # wait 3 seconds
+                            time.sleep(3.0)
+
+                            # pass score to game over scene function
+                            game_over_scene(score)
+
+        # if player gets 50 points they win
+        if score == 50:
+
+            # call you win scene
+            win_scene()
 
         # redraw sprites
         game.render_sprites(aliens + lasers + [ship])
         game.tick()
+
+def win_scene():
+
+    sound = ugame.audio
+
+    # stop sound
+    sound.stop()
+
+    # make sure audio isn't muted
+    sound.mute(False)
+
+    # play applause sound
+    #sound.play(win_sound)
+
+    # access image bank
+    image_bank_3 = stage.Bank.from_bmp16("mt_game_studio.bmp")
+
+    # set image to 0 in bank
+    background = stage.Grid(image_bank_3, constants.SCREEN_GRID_X,
+                            constants.SCREEN_GRID_Y)
+
+    # add text list
+    text = []
+
+    # customize text
+    text1 = stage.Text(width=50, height=40, font=None, palette=constants.RED_PALETTE, buffer=None)
+
+    # move text
+    text1.move(49, 20)
+
+    # display final score
+    text1.text("You win!")
+
+    # append to text list
+    text.append(text1)
+
+    # customize text 2
+    text2 = stage.Text(width=29, height=14, font=None, palette=constants.RED_PALETTE, buffer=None)
+
+    # move text 3
+    text2.move(32, 110)
+
+    # create text for text 3
+    text2.text("PRESS SELECT")
+
+    # append text to text list
+    text.append(text2)
+
+     # set frame rate to 60 fps
+    game = stage.Stage(ugame.display, constants.FPS)
+
+    # add text to game layer with background
+    game.layers = text + [background]
+
+    # display background and text
+    game.render_block()
+
+    # game loop
+    while True:
+
+        # get user input
+        keys = ugame.buttons.get_pressed()
+
+        # check if SELECT was pressed
+        if keys & ugame.K_SELECT != 0:
+
+            # reset PyBadge
+            supervisor.reload()
+
+            # game tick
+            game.tick()
 
 # game over scene function
 def game_over_scene(final_score):
@@ -618,7 +736,7 @@ def game_over_scene(final_score):
     # set image to 0 in bank
     background = stage.Grid(image_bank_2, constants.SCREEN_GRID_X,
                             constants.SCREEN_GRID_Y)
-    
+
     # add text list
     text = []
 
