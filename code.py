@@ -14,8 +14,8 @@ import constants
 # this is the splash scene for the menu
 def splash_scene():
 
-    # create coin sound
-    coin_sound = open("coin.wav", 'rb')
+    # create bell sound
+    bell_sound = open("boxing_bell.wav", 'rb')
     sound = ugame.audio
 
     # stop all audio
@@ -24,8 +24,8 @@ def splash_scene():
     # make sure mute is false
     sound.mute(False)
 
-    # play coin sound
-    sound.play(coin_sound)
+    # play bell sound
+    sound.play(bell_sound)
 
     # import background and assign to a variable
     image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
@@ -88,7 +88,7 @@ def menu_scene():
     text = []
 
     # create first text and customize
-    text1 = stage.Text(width = 29, height = 12, font = None, palette = constants.RED_PALETTE, buffer = None)
+    text1 = stage.Text(width = 60, height = 40, font = None, palette = constants.RED_PALETTE, buffer = None)
 
     # move text
     text1.move(38, 10)
@@ -100,7 +100,7 @@ def menu_scene():
     text.append(text1)
 
     # create first text and customize
-    text2 = stage.Text(width = 29, height = 12, font = None, palette = constants.RED_PALETTE, buffer = None)
+    text2 = stage.Text(width = 40, height = 20, font = None, palette = constants.RED_PALETTE, buffer = None)
 
     # move text
     text2.move(40, 110)
@@ -110,6 +110,18 @@ def menu_scene():
 
     # add text to text list
     text.append(text2)
+
+    # create first text and customize
+    text3 = stage.Text(width = 22, height = 12, font = None, palette = constants.RED_PALETTE, buffer = None)
+
+    # move text
+    text3.move(26, 90)
+
+    # assign a text to variable
+    text3.text("SELECT for Info")
+
+    # add text to text list
+    text.append(text3)
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
@@ -129,10 +141,64 @@ def menu_scene():
         # get user button input
         keys = ugame.buttons.get_pressed()
 
+        # check if START has been pressed
         if keys & ugame.K_START:
+
+            # call game scene
             game_scene()
 
+        # check if SELECT has been pressed
+        if keys & ugame.K_SELECT:
+
+            # call game scene
+            instructions_scene()
+
+
         game.tick()
+
+def instructions_scene():
+
+    # import background and assign to a variable
+    image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
+
+    # create text list
+    text = []
+
+    # create first text and customize
+    text1 = stage.Text(width = 60, height = 40, font = None, palette = constants.RED_PALETTE, buffer = None)
+
+    # move text
+    text1.move(0, 0)
+
+    # assign a text to variable
+    text1.text("Use the D-pad to\n" "move. Your ship cant\n" "hit the aliens or\n" "you will lose a life.\n" "Three losses and you\n" "lose. Press A to\n" "shoot and B for a\n" "speed boost.")
+
+    # add text to text list
+    text.append(text1)
+
+    # grid for image background
+    background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
+
+    # display images and set refresh rate to 60 hertz
+    game = stage.Stage(ugame.display, constants.FPS)
+
+    # put image of background and text into a list assigned to game
+    game.layers = text + [background]
+
+    # display background
+    game.render_block()
+
+    # game loop
+    while True:
+
+        # get user button input
+        keys = ugame.buttons.get_pressed()
+
+        # check if B has been pressed
+        if keys & ugame.K_X:
+
+            # call menu scene
+            menu_scene()
 
 # this is the main game game_scene
 def game_scene():
@@ -185,9 +251,10 @@ def game_scene():
     select_button = constants.BUTTON_STATE["button_up"]
 
     # getting sound from library and assigning to variable
-    pew_sound = open("pew.wav", 'rb')
-    boom_sound = open("boom.wav", 'rb')
-    crash_sound = open("crash.wav", 'rb')
+    background_sound = open("saturated-acoustic-hip-hop-drumloop-155bpm-143349.wav", 'rb')
+    cannon_sound = open("cannon_x.wav", 'rb')
+    boom_sound = open("boom_x.wav", 'rb')
+    hit_sound = open("baseball_hit.wav", 'rb')
     sound = ugame.audio
 
     # stop all sound
@@ -195,6 +262,12 @@ def game_scene():
 
     # make sure audio isn't muted
     sound.mute(False)
+
+    # play background sound looped
+    while True:
+        sound.play(background_sound)
+
+        break
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
@@ -263,7 +336,29 @@ def game_scene():
 
         # check if B button is being pressed
         if keys & ugame.K_X:
-            pass
+
+            # check if sate is up
+            if b_button == constants.BUTTON_STATE["button_up"]:
+
+                # change to just pressed
+                b_button = constants.BUTTON_STATE["button_just_pressed"]
+
+            # else if check if it was just pressed
+            elif b_button == constants.BUTTON_STATE["button_just_pressed"]:
+
+                # change state to still pressed
+                b_button = constants.BUTTON_STATE["button_still_pressed"]
+        else:
+
+            # check if state is still pressed
+            if b_button == constants.BUTTON_STATE["button_still_pressed"]:
+                
+                # change state to button released
+                b_button = constants.BUTTON_STATE["button_released"]
+            else:
+
+                # else change state to button back up again
+                b_button = constants.BUTTON_STATE["button_up"]
 
         # check if pressed to fire
         if keys & ugame.K_O != 0:
@@ -291,12 +386,18 @@ def game_scene():
                 # else change state to button back up again
                 a_button = constants.BUTTON_STATE["button_up"]
 
-            
+        # check if START button was pressed
         if keys & ugame.K_START:
-            pass
+            
+            # unmute audio
+            sound.mute(False)
+
+        # check if SELECT is pressed
         if keys & ugame.K_SELECT:
-            pass
-        
+
+            # mute all sound
+            sound.mute(True)
+
         # check if right button is pressed
         if keys & ugame.K_RIGHT:
 
@@ -304,11 +405,12 @@ def game_scene():
             if ship.x <= constants.SCREEN_X - constants.SPRITE_SIZE:
 
                 # move ship 1 pixel right
-                ship.move(ship.x + constants.SPRITE_MOVEMENT_SPEED, ship.y)
+                ship.move(ship.x + constants.SHIP_SPEED, ship.y)
             
             else:
                 # prevent ship from passing boundary, the screen
-                ship.move(constants.SCREEN_X - constants.SPRITE_SIZE, ship.y)
+                # constants.SCREEN_X - constants.SPRITE_SIZE
+                ship.move(0, ship.y)
 
         # check if left button is pressed
         if keys & ugame.K_LEFT:
@@ -317,11 +419,11 @@ def game_scene():
             if ship.x >= 0:
 
                 # move ship 1 pixel left
-                ship.move(ship.x - constants.SPRITE_MOVEMENT_SPEED, ship.y)
+                ship.move(ship.x - constants.SHIP_SPEED, ship.y)
             
             # else stay at x = 0 to not pass boundary
             else:
-                ship.move(0, ship.y)
+                ship.move(160, ship.y)
 
         # check if the up button is being pressed
         if keys & ugame.K_UP:
@@ -330,7 +432,7 @@ def game_scene():
             if ship.y >= 0:
 
                 # move ship up 1 pixel
-                ship.move(ship.x, ship.y - constants.SPRITE_MOVEMENT_SPEED)
+                ship.move(ship.x, ship.y - constants.SHIP_SPEED)
             
             # prevent ship from getting out of the boundaries
             else:
@@ -343,14 +445,11 @@ def game_scene():
             if ship.y <= constants.SCREEN_Y - constants.SPRITE_SIZE:
 
                 # move ship 1 pixel down
-                ship.move(ship.x, ship.y + constants.SPRITE_MOVEMENT_SPEED)
+                ship.move(ship.x, ship.y + constants.SHIP_SPEED)
             
             # prevent ship from getting out of bounds
             else:
                 ship.move(ship.x, constants.SCREEN_Y - constants.SPRITE_SIZE)
-
-        # update game logic
-        
 
         # play sound and shoot if A button was just pressed
         if a_button == constants.BUTTON_STATE["button_just_pressed"]:
@@ -364,11 +463,17 @@ def game_scene():
                     # move laser to where ship is
                     lasers[laser_number].move(ship.x, ship.y)
             
-                    # play pew sound
-                    sound.play(pew_sound)
+                    # play cannon sound
+                    sound.play(cannon_sound)
 
                     # break out of loop
                     break
+
+        # play sound and shoot if A button was just pressed
+        if b_button == constants.BUTTON_STATE["button_just_pressed"]:
+
+            # speed boost
+            constants.SHIP_SPEED += 2
 
         # for loop while laser number in range of amount of lasers
         for laser_number in range(len(lasers)):
@@ -487,8 +592,8 @@ def game_scene():
                         # alien has hit ship, stop sound
                         sound.stop()
 
-                        # play crash sound
-                        sound.play(crash_sound)
+                        # play hit sound
+                        sound.play(hit_sound)
 
                         # wait 3 seconds
                         time.sleep(3.0)
