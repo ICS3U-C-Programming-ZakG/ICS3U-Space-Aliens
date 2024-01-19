@@ -17,6 +17,9 @@ SPRITE_SIZE = 16
 # total number of aliens
 TOTAL_NUMBER_OF_ALIENS = 5
 
+# declare total number of aliens in second level
+TOTAL_NUMBER_OF_ALIENS_TWO = 3
+
 # declare total number of lasers
 TOTAL_NUMBER_OF_LASERS = 5
 
@@ -25,6 +28,9 @@ SHIP_SPEED = 1
 
 # declare alien speed
 ALIEN_SPEED = 1
+
+# declare second alien speed
+ALIEN_SPEED_TWO = 1
 
 # declare laser speed
 LASER_SPEED = 2

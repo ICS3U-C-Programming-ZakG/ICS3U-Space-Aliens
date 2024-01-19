@@ -233,24 +233,6 @@ def game_scene():
     # set score to whatever the value is
     score_text.text("Score: {0}".format(score))
 
-    # initialize lives
-    lives = 3
-
-    # scale text size
-    lives_text = stage.Text(width = 29, height = 14)
-
-    # clear lives
-    lives_text.clear()
-
-    # set cursor to top left
-    lives_text.cursor(80, 0)
-
-    # move slightly down and to the side
-    lives_text.move(1,1)
-
-    # set lives to whatever the value is
-    lives_text.text("Lives: {lives}")
-
     # function to show alien
     def show_alien():
 
@@ -351,7 +333,7 @@ def game_scene():
     game = stage.Stage(ugame.display, constants.FPS)
 
     # put images into a list assigned to game
-    game.layers = [lives_text] + [score_text] + aliens + lasers + [ship] + [background]
+    game.layers = [score_text] + aliens + lasers + [ship] + [background]
 
     # display background
     game.render_block()
@@ -623,49 +605,24 @@ def game_scene():
                         # play hit sound
                         sound.play(hit_sound)
 
-                        # subtract one from lives
-                        lives = lives - 1
+                        # wait 3 seconds
+                        time.sleep(3.0)
 
-                        # clear lives text
-                        lives_text.clear()
+                        # pass score to game over scene function
+                        game_over_scene(score)
 
-                        # reposition in top right of screen
-                        lives_text.cursor(80, 0)
-                        lives_text.move(1, 1)
-
-                        # display lives
-                        lives_text.text("Lives: {lives}")
-
-                        # check if lives falls under 0
-                        if lives == 0:
-
-                            # wait 3 seconds
-                            time.sleep(3.0)
-
-                            # pass score to game over scene function
-                            game_over_scene(score)
-
-        # if player gets 50 points they win
+        # if player gets 30 points they win
         if score == 30:
 
-            # stop sound
-            sound.stop()
-
-            # make sure audio isn't muted
-            sound.mute(False)
-
-            # play applause sound
-            sound.play(win_sound)
-
             # call you win scene
-            game_scene_two(score, lives)
+            game_scene_two(score)
 
         # redraw sprites
         game.render_sprites(aliens + lasers + [ship])
         game.tick()
 
 # this is the main game game_scene
-def game_scene_two(current_score, current_lives):
+def game_scene_two(current_score):
 
     # initialize score
     score = current_score
@@ -685,24 +642,6 @@ def game_scene_two(current_score, current_lives):
     # set score to whatever the value is
     score_text.text("Score: {0}".format(score))
 
-    # initialize lives
-    lives = current_lives
-
-    # scale text size
-    lives_text = stage.Text(width = 29, height = 14)
-
-    # clear lives
-    lives_text.clear()
-
-    # set cursor to top left
-    lives_text.cursor(80, 0)
-
-    # move slightly down and to the side
-    lives_text.move(1,1)
-
-    # set lives to whatever the value is
-    lives_text.text("Lives: {lives}")
-
     # function to show alien
     def show_alien():
 
@@ -721,7 +660,7 @@ def game_scene_two(current_score, current_lives):
                 break
 
     # import background and assign to a variable
-    image_bank_background = stage.Bank.from_bmp16("space_aliens_background.bmp")
+    image_bank_background = stage.Bank.from_bmp16("mt_game_studio.bmp")
 
     # import image for sprite and assign
     image_bank_sprites = stage.Bank.from_bmp16("space_aliens.bmp")
@@ -734,9 +673,9 @@ def game_scene_two(current_score, current_lives):
 
     # getting sound from library and assigning to variable
     #background_sound = open("news_x.wav", 'rb')
-    shoot_sound = open("feedback_x.wav", 'rb')
+    shoot_sound = open("phasers1_x.wav", 'rb')
     boom_sound = open("boom_x.wav", 'rb')
-    hit_sound = open("baseball_hit.wav", 'rb')
+    hit_sound = open("ricochet_x.wav", 'rb')
     win_sound = open("applause_y.wav", 'rb')
     sound = ugame.audio
 
@@ -747,7 +686,6 @@ def game_scene_two(current_score, current_lives):
     sound.mute(False)
 
     # play background sound
-    sound.play(background_sound)
 
     # grid for image background
     background = stage.Grid(image_bank_background, constants.SCREEN_GRID_X, constants.SCREEN_GRID_Y)
@@ -759,7 +697,7 @@ def game_scene_two(current_score, current_lives):
         for y_location in range(constants.SCREEN_GRID_Y):
 
             # pick random tile 1-3
-            tile_picked = random.randint(1,3)
+            tile_picked = random.randint(1,14)
 
             # place random tile in the location of x and y
             background.tile(x_location, y_location, tile_picked)
@@ -771,7 +709,7 @@ def game_scene_two(current_score, current_lives):
     aliens = []
 
     # loop while in range of total number of aliens
-    for alien_number in range(constants.TOTAL_NUMBER_OF_ALIENS):
+    for alien_number in range(constants.TOTAL_NUMBER_OF_ALIENS_TWO):
 
         # assign image to alien and move to off screen storing location
         a_single_alien = stage.Sprite(image_bank_sprites, 8,
@@ -803,7 +741,7 @@ def game_scene_two(current_score, current_lives):
     game = stage.Stage(ugame.display, constants.FPS)
 
     # put images into a list assigned to game
-    game.layers = [lives_text] + [score_text] + aliens + lasers + [ship] + [background]
+    game.layers = [score_text] + aliens + lasers + [ship] + [background]
 
     # display background
     game.render_block()
@@ -981,7 +919,7 @@ def game_scene_two(current_score, current_lives):
                 # move alien down
                 aliens[alien_number].move(aliens[alien_number].x,
                                           aliens[alien_number].y +
-                                          constants.ALIEN_SPEED)
+                                          constants.ALIEN_SPEED_TWO)
 
                 # check if alien is off screen
                 if aliens[alien_number]. y > constants.SCREEN_Y:
@@ -994,7 +932,7 @@ def game_scene_two(current_score, current_lives):
                     show_alien()
 
                     # subtract one from score
-                    score -= 1
+                    score -= 2
 
                     # check if score falls under 0
                     if score < 0:
@@ -1012,6 +950,12 @@ def game_scene_two(current_score, current_lives):
                     # display score
                     score_text.text("Score: {0}".format(score))
 
+                    # wait 3 seconds
+                    time.sleep(3.0)
+
+                    # pass score to game over scene function
+                    game_over_scene(score)
+
             # loop through lasers
             for laser_number in range(len(lasers)):
 
@@ -1028,7 +972,7 @@ def game_scene_two(current_score, current_lives):
                             if stage.collide(lasers[laser_number].x + 6, lasers[laser_number].y + 2,
                                              lasers[laser_number].x + 11, lasers[laser_number].y + 12,
                                              aliens[alien_number].x + 1, aliens[alien_number].y,
-                                             aliens[alien_number].x + 15, aliens[alien_number].y + 15):
+                                             aliens[alien_number].x + 13, aliens[alien_number].y + 13):
 
                                 # you hit an alien, move them off screen to staging
                                 aliens[alien_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
@@ -1045,7 +989,7 @@ def game_scene_two(current_score, current_lives):
                                 show_alien()
 
                                 # add one to score
-                                score = score + 1
+                                score = score + 2
 
                                 # clear text
                                 score_text.clear()
@@ -1065,7 +1009,7 @@ def game_scene_two(current_score, current_lives):
 
                     # check if alien hits ship bounding box
                     if stage.collide(aliens[alien_number].x + 1, aliens[alien_number].y,
-                                     aliens[alien_number].x + 15, aliens[alien_number].y + 15,
+                                     aliens[alien_number].x + 13, aliens[alien_number].y + 13,
                                      ship.x, ship.y,
                                      ship.x + 15, ship.y + 15):
 
@@ -1075,41 +1019,22 @@ def game_scene_two(current_score, current_lives):
                         # play hit sound
                         sound.play(hit_sound)
 
-                        # subtract one from lives
-                        lives = lives - 1
+                        # wait 3 seconds
+                        time.sleep(3.0)
 
-                        # clear lives text
-                        lives_text.clear()
+                        # pass score to game over scene function
+                        game_over_scene(score)
 
-                        # reposition in top right of screen
-                        lives_text.cursor(80, 0)
-                        lives_text.move(1, 1)
+        # if player gets 50 points they win
+        if score == 50:
 
-                        # display lives
-                        lives_text.text("Lives: {lives}")
-
-                        # check if lives falls under 0
-                        if lives == 0:
-
-                            # wait 3 seconds
-                            time.sleep(3.0)
-
-                            # pass score to game over scene function
-                            game_over_scene(score)
-
-        # if player gets 60 points they win
-        if score == 60:
-
-            # stop sound
-            sound.stop()
-
-            # make sure audio isn't muted
-            sound.mute(False)
-
-            # play applause sound
+            # play win sound
             sound.play(win_sound)
 
-            # call you win scene
+            # wait 3 seconds
+            time.sleep(3.0)
+
+            # call the win scene
             win_scene()
 
         # redraw sprites
@@ -1179,9 +1104,15 @@ def win_scene():
 # game over scene function
 def game_over_scene(final_score):
 
+    # declare game over sound
+    game_over_sound = open("peeeooop_x.wav", 'rb')
+    
     # turn off sound
     sound = ugame.audio
     sound.stop()
+
+    # play game over sound
+    sound.play(game_over_sound)
 
     # access image bank
     image_bank_2 = stage.Bank.from_bmp16("mt_game_studio.bmp")
